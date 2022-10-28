@@ -1,0 +1,381 @@
+CREATE Database ema;
+USE ema;
+
+CREATE TABLE CGenero (
+  id_gen INT NOT NULL AUTO_INCREMENT,
+  tipo_gen VARCHAR(45) NOT NULL,
+  PRIMARY KEY (id_gen));
+
+CREATE TABLE CInteligencia (
+  id_int INT NOT NULL AUTO_INCREMENT,
+  tipo_int VARCHAR(20) NOT NULL,
+  PRIMARY KEY (id_int));
+
+CREATE TABLE CParcial (
+  id_par INT NOT NULL AUTO_INCREMENT,
+  nombre_par VARCHAR(30) NOT NULL,
+  PRIMARY KEY (id_par));
+
+CREATE TABLE CRol (
+  id_rol INT NOT NULL AUTO_INCREMENT,
+  tipo_rol VARCHAR(20) NOT NULL,
+  PRIMARY KEY (id_rol));
+
+CREATE TABLE CSemestre (
+  id_sem INT NOT NULL AUTO_INCREMENT,
+  tipo_sem VARCHAR(20) NOT NULL,
+  PRIMARY KEY (id_sem));
+
+CREATE TABLE CEspecialidad (
+  id_es INT NOT NULL AUTO_INCREMENT,
+  nombre_es VARCHAR(45) NOT NULL,
+  PRIMARY KEY (id_es));
+
+CREATE TABLE CUaprendizaje (
+  id_ua INT NOT NULL AUTO_INCREMENT,
+  valida_ua INT NOT NULL DEFAULT 1,
+  nombre_ua VARCHAR(60) NOT NULL,
+  id_es INT NOT NULL,
+  id_sem INT NOT NULL,
+  PRIMARY KEY (id_ua),
+  FOREIGN KEY (id_es) REFERENCES CEspecialidad (id_es),
+  FOREIGN KEY (id_sem) REFERENCES CSemestre (id_sem));
+
+CREATE TABLE MCicloescolar (
+  id_cicloesc INT NOT NULL AUTO_INCREMENT,
+  id_ae INT NOT NULL,
+  id_tc INT NOT NULL,
+  PRIMARY KEY (id_cicloesc));
+
+CREATE TABLE MPersona (
+  id_per INT NOT NULL AUTO_INCREMENT,
+  valida_per INT NOT NULL DEFAULT 1,
+  nombre_per VARCHAR(45) NOT NULL,
+  appat_per VARCHAR(45) NOT NULL,
+  apmat_per VARCHAR(45) NOT NULL,
+  edad_per INT NOT NULL,
+  tel_per VARCHAR(10) NULL,
+  correo_per VARCHAR(45) NOT NULL,
+  pass_per VARCHAR(45) NOT NULL,
+  id_rol INT NOT NULL,
+  id_int INT NOT NULL,
+  id_gen INT NOT NULL,
+  id_es INT NOT NULL,
+  PRIMARY KEY (id_per),
+    FOREIGN KEY (id_gen) REFERENCES CGenero (id_gen),
+    FOREIGN KEY (id_int) REFERENCES CInteligencia (id_int),
+    FOREIGN KEY (id_rol) REFERENCES CRol (id_rol),
+    FOREIGN KEY (id_es) REFERENCES CEspecialidad (id_es));
+
+CREATE TABLE DAsistente (
+  id_asis INT NOT NULL AUTO_INCREMENT,
+  id_cicloesc INT NOT NULL,
+  id_per INT NOT NULL,
+  PRIMARY KEY (id_asis),
+    FOREIGN KEY (id_cicloesc) REFERENCES MCicloescolar (id_cicloesc),
+    FOREIGN KEY (id_per) REFERENCES MPersona (id_per));
+
+
+
+CREATE TABLE CTema (
+  id_tem INT NOT NULL AUTO_INCREMENT,
+  nombre_tem VARCHAR(150) NOT NULL,
+  id_par INT NOT NULL,
+  id_ua INT NOT NULL,
+  PRIMARY KEY (id_tem),
+    FOREIGN KEY (id_par) REFERENCES CParcial (id_par),
+    FOREIGN KEY (id_ua) REFERENCES CUaprendizaje (id_ua));
+
+CREATE TABLE CSubtema (
+  id_sub INT NOT NULL AUTO_INCREMENT,
+  nombre_sub VARCHAR(150) NOT NULL,
+  id_tem INT NOT NULL,
+  PRIMARY KEY (id_sub),
+    FOREIGN KEY (id_tem) REFERENCES CTema (id_tem));
+
+CREATE TABLE MTarea (
+  id_tarea INT NOT NULL AUTO_INCREMENT,
+  nombre_tarea VARCHAR(50) NOT NULL,
+  cal_tarea INT NOT NULL,
+  id_sub INT NOT NULL,
+  id_asis INT NOT NULL,
+  PRIMARY KEY (id_tarea),
+    FOREIGN KEY (id_sub) REFERENCES CSubtema (id_sub),
+    FOREIGN KEY (id_asis) REFERENCES DAsistente (id_asis));
+
+CREATE TABLE CMaterial (
+  id_mat INT NOT NULL AUTO_INCREMENT,
+  url_mat VARCHAR(256) NOT NULL,
+  id_sub INT NOT NULL,
+  PRIMARY KEY (id_mat),
+    FOREIGN KEY (id_sub) REFERENCES CSubtema (id_sub));
+
+INSERT INTO CGenero values
+    (1, 'Masculino'),
+    (2, 'Femenino'),
+    (3, 'Prefiero no decirlo');
+
+INSERT INTO CInteligencia values
+    (1, 'Visual'),
+    (2, 'Auditivo'),
+    (3, 'Kinéstesico'),
+    (4, 'Leer y Escribir');
+INSERT INTO CRol values
+    (1, 'Usuario'),
+    (2, 'Administrador');
+
+INSERT INTO CSemestre values
+    (1, 'Primero'),
+    (2, 'Segundo'),
+    (3, 'Tercero'),
+    (4, 'Cuarto'),
+    (5, 'Quinto'),
+    (6, 'Sexto');
+
+INSERT INTO CEspecialidad values
+    (1, 'Tronco común'),
+    (2, 'Programación'),
+    (3, 'Sistemas Digitales'),
+    (4, 'Máquinas con Sistemas Automatizados'),
+    (5, 'Mecatrónica');
+
+INSERT INTO CUAprendizaje values
+    (1, 1, 'Cálculo Diferencial', 1, 4),
+    (2, 1, 'Física II', 1, 4),
+    (3, 1, 'Química II', 1, 4),
+    (4, 1, 'Dibujo Técnico II', 1, 4),
+    (5, 1, 'Inglés IV', 1, 4),
+    (6, 1, 'Programación y Servicios Web', 2, 4),
+    (7, 1, 'Lab. de Proy. de Tecnologías de la Infor. II', 2, 4),
+    (8, 1, 'Bases de Datos', 2, 4),
+    (9, 1, 'Téc. de Programación Personal con Calidad', 2, 4);
+
+INSERT INTO CParcial values
+    (1, 'Primero'),
+    (2, 'Segundo'),
+    (3, 'Tercero');
+
+INSERT INTO CTema values
+    (1, 'Funciones', 1, 1),
+    (2, 'Limites', 1, 1),
+    (3, 'Continuidad', 2, 1),
+    (4, 'Problemas referentes a la derivada de funciones algebraicas', 2, 1),
+    (5, 'Problemas referente a la derivada de funciones trascendentes y el uso diferencial', 3, 1),
+    (6, 'Leyes y principios de la Dinamíca', 1, 2),
+    (7, 'Problemas de la mecánica y la aplicacion de sus principios en solidos', 2, 2),
+    (8, 'Leyes de la termodinamica en situaciones de fenomenos tecnologicos y sociales', 3, 2),
+    (9, 'Balanceo de ecuaciones químicas', 1, 3),
+    (10, 'Estequiometría', 1, 3),
+    (11, 'Estructura de Compuestos Orgánicos', 2, 3),
+    (12, 'Nomenclatura y Aplicacion de Compuestos Orgánicos', 3, 3),
+    (13, 'Representacion de formas de un objeto bidimencionalmente y en isométrico', 1, 4),
+    (14, 'Representacion de vistas e isométrico de un objeto mostrando la estructura interna y externa', 2, 4),
+    (15, 'Desarrollo de modelos bidimensionales o tridimensionales de acuerdo a especificaciones', 3, 4),
+    (16, 'Uso de tiempos gramaticales para comunicar preferencias y experiencias sobre actividades deportivas', 1, 5),
+    (17, 'Enunciados condicionales 0, 1 y 2 para referirse a la prevencion de las causas de desastres naturales', 1, 5),
+    (18, 'Uso de los tiempos pasado simple y pasado perfecto para narrar hechos acontecidos en diversos ambitos', 2, 5),
+    (19, 'Uso de la voz pasiva y los enunciados imperativos para referirse a inventos y descubrimientos', 3, 5),
+    (20, 'Protocolos de comunicacion en la arquitectura de internet para el desarrollo web', 1, 6),
+    (21, 'Aplicacion de diferentes herramientas y lenguajes de programacion para el desarrollo de aplicaciones', 2, 6),
+    (22, 'Contextualiza los protocolos y estándares de los servicios Web', 2, 6),
+    (23, 'Aplicacion de los conceptos fundamentales a niveles de seguridad de los Servicios Web', 3, 6),
+    (24, 'Diseño de Bases de Datos normalizadas aplicando el modelado de datos Entidad Relacion y Relacional', 1, 8),
+    (25, 'Uso de gestores y lenguajes de bases de datos para la manipulacion de la informacion de Bases de Datos', 2, 8),
+    (26, 'Aplicacion de proteccion a las bases de datos para su confidencialidad, disponibilidad e inseguridad', 3, 8),
+    (27, 'Explica las actividades de la administracion de la calidad del sofware', 1, 9),
+    (28, 'Aplicacion de metodos de administracion de tiempo de la calidad del software', 1, 9),
+    (29, 'Evalua la calidad del producto de software por la elaboracion de los planes del proyecto', 2, 9),  
+    (30, 'Planeacion estrategica del proyecto de desarrollo de Software', 2, 7),
+    (31, 'Realiza la ejecucion del proyecto de desarrollo de software con la planeacion', 2, 7),
+    (32, 'Implementacion del plan de mejora del proyecto con base a su ejecucion', 3, 7),
+    (33, 'Sustenta el impacto que tiene el proyecto para la industria', 3, 7);
+
+INSERT INTO CSubtema values
+    (1, 'Tabla de valores.', 1),
+    (2, 'Dominio y rango', 1),
+    (3, 'Notacion y Evaluacion de una funcion', 1),
+    (4, 'Funcion Inversa', 1),
+    (5, 'Dominio y Rango en Notación de Conjunto por Descripción, Intervalo y Representación Gráfica.', 1),
+    (6, 'Modelos matemáticos.', 1),
+    (7, 'Funciones: polinomiales, racionales y trascendentes.', 1),
+    (8, 'Operaciones de funciones: suma, resta, multiplicación y división', 1),
+    (9, 'Concepto de límite de una función e introducción de su notación', 2),
+    (10, 'Continuidad de una función en un punto y en unintervalo', 2),
+    (11, 'Tipos de discontinuidad (evitable e inevitable)', 2),
+    (12, 'Cálculo de las discontinuidades en funciones racionales.', 2),
+    (13, 'Cálculo de límites (uso de teoremas y criterios de continuidad)', 2),
+    (14, 'Cálculo de derivadas de funciones algebraicas por reglas basicas de derivadas', 2),
+    (15, 'Regla de la cadena', 3),
+    (16, 'Derivada de función inversa y derivación implícita', 3),
+    (17, 'Derivadas sucesivas', 3),
+    (18, 'Cálculo de derivadas de funciones exponenciales y logarítmicas', 4),
+    (19, 'Cálculo de derivadas de funciones trigonométricas e inversas trigonométricas', 4),
+    (20, 'Función creciente y decreciente', 5),
+    (21, 'Signo de la primera derivada', 5),
+    (22, 'carácter creciente y decreciente', 5),
+    (23, 'Máximos y mínimos relativos', 5),
+    (24, 'Sentido de concavidad de la gráfica de una función', 5),
+    (25, 'Signo de la segunda derivada', 5),
+    (26, 'Carácter de la concavidad de la gráfica de una función', 5),
+    (27, 'Puntos de inflexión.', 5),
+    (28, 'Máximo y mínimo absolutos de una función en un intervalo', 5),
+    (29, 'Problemas de máximos y mínimos', 5),
+    (30, 'Pendiente, ecuaciones de recta tangente y normal, ángulo entre curvas y rapidez', 5),
+    (31, 'Primera ley de Newton', 6),
+    (32, 'Segunda ley de Newton', 6),
+    (33, 'Tercera ley de Newton', 6),
+    (34, 'Fuerza de friccion', 6),
+    (35, 'Explicacion M.C.U', 7),
+    (36, 'Explicacion M.C.V', 7),
+    (37, 'Ley de gravitacion universal', 7),
+    (38, 'Enunciado de la ley de Gravitación Universal', 7),
+    (39, 'Producto Punto o Producto Escalar entre Vectores', 7),
+    (40, 'Fuerza constante', 8),
+    (41, 'fuerza cinetica', 8),
+    (42, 'Trabajo neto', 8),
+    (43, 'Reacciones Quimicas Inorganicas', 9),
+    (44, 'Balanceo de Ecuaciones Quimicas', 9),
+    (45, 'Estequiometria (Unidades Quimicas)', 10),
+    (46, 'Estequiometria II', 10),
+    (47, 'Estructura de Compuestos Organicos', 10),
+    (48, 'Nomenclatura de Hidrocarburos', 11),
+    (49, 'Nomenclatura de Funciones Quimicas Organicas ', 12),
+    (50, 'Present Perfect Tense', 16),
+    (51, 'Verbs Forms', 16),
+    (52, 'Future Tenses', 16),
+    (53, 'Too/Enough', 16),
+    (54, 'Passive Voice', 17),
+    (55, 'Modal verbs', 17),
+    (56, 'Zero conditional', 18),
+    (57, 'Conditional 1', 18),
+    (58, 'Neither, either, so, to', 19),
+    (59, 'Sistemas de proyeccion ortogonal', 13),
+    (60, 'Vistas principales y auxiliares en los sistemas Americano y Europeo', 13),
+    (61, 'Trazar isometricos a partir de vistas principales en sistema Americano y Europeo', 13),
+    (62, 'Describe cortes y secciones', 14),
+    (63, 'Representa cortes y secciones en vistas e isometrico', 14),
+    (64, 'Traza modelos especificos mediante los diferentes metodos de dibujo', 14),
+    (65, 'Representa graficamente la etructura interna y externa de modelos especificos', 14),
+    (66, 'Antecedentes del internet', 20),
+    (67, 'Modelo cliente-servidor', 20),
+    (68, 'Arquitectura del internet', 20),
+    (69, 'HTML', 21),
+    (70, 'CSS y JavaScript', 21),
+    (71, 'Modelo vista-controlador', 21),
+    (72, 'Servidoers web', 22),
+    (73, 'JSP y parametros', 22),
+    (74, 'Sesiones y cookies', 23),
+    (75, 'Conexion con BD y servicios', 23),
+    (76, 'Servicios web', 23),
+    (77, 'Microservicios', 23),
+    (78, 'Fundamentos de bases de datos', 24),
+    (79, 'Modelos de datos utilizados para el diseño de bases de datos', 24),
+    (80, 'Base de datos normalizados', 24),
+    (81, 'Gestores de bases de datos', 25),
+    (82, 'Lenguajes de acceso para la manipulacion de bases de datos', 25),
+    (83, 'Proteccion al acceso de datos', 26),
+    (84, 'Transacciones para asegurar la utenticidad de la informacion', 26),
+    (85, '¿Que es un proyecto?', 30),
+    (86, 'Estudio de factibilidad', 30),
+    (87, 'Grafica de Gantt', 30),
+    (88, 'Requerimientos', 30),
+    (89, 'Casos de uso y Específicacion de usos', 31),
+    (90, 'Wireframes y Mapas de navegacion', 31),
+    (91, 'Maquetacion', 31),
+    (92, 'Modelo Entidad-Relacion', 32),
+    (93, 'Modelado del sistema', 32),
+    (94, 'Diagrama de actividades', 32),
+    (95, 'Tipos de pruebas', 33),
+    (96, 'Entrega del Proyecto', 33),
+    (97, 'Operadores aritmeticos, relacionales, de asignacion, logicos, a nivel Bits', 1),
+    (98, 'Tipos de datos', 27),
+    (99, 'Listas', 27),
+    (100, 'Tuplas', 27),
+    (101, 'Diccionarios', 27),
+    (102, 'Conjuntos', 27),
+    (103, 'Entrada de flujo', 27),
+    (104, 'Salida de flujo', 27),
+    (105, 'Condicional if', 27),
+    (106, 'If simple', 27),
+    (107, 'If-else', 27),
+    (108, 'If-elif-else', 27),
+    (109, 'For', 27),
+    (110, 'While', 27),
+    (111, 'Sentencia Break', 27),
+    (112, 'Sentencia Continue', 27),
+    (113, 'Sentencia Pass', 27),
+    (114, 'Funciones', 27),
+    (115, 'Funciones con retorno', 27),
+    (116, 'Ambito de la variable', 27),
+    (117, 'Parametros en una funcion', 27),
+    (118, 'Parametros por omision, arbitrarios,', 27),
+    (119, 'Desempaquetado de parametros', 27),
+    (120, 'Recursividad', 27),
+    (121, 'Lambda', 27),
+    (122, 'Map', 27),
+    (123, 'Reduce', 27),
+    (124, 'Filter', 27),
+    (125, 'Zip', 27),
+    (126, 'Clase', 28),
+    (127, '__init__', 28),
+    (128, 'Instancia de una clase', 28),
+    (129, 'Herencia', 28),
+    (130, 'Herencia multiple', 28),
+    (131, 'Abstraccion', 28),
+    (132, 'Encapsulamiento', 28),
+    (133, 'Polimorfismo', 28),
+    (134, 'Modulos', 28),
+    (135, 'Funcior dir()', 28),
+    (136, 'Paquetes', 28),
+    (137, 'PyPI', 28),
+    (138, 'Tkinter', 28),
+    (139, 'Ficheros', 29),
+    (140, 'Apertura de ficheros', 29),
+    (141, 'Modo _apertura de ficheros, ficheros binarios', 29),
+    (142, 'Metodo para ficheros de texto, ficheros binarios', 29),
+    (143, 'Serializacion y deserializacion', 29),
+    (144, 'Excepciones', 29),
+    (145, 'Data science', 29),
+    (146, 'Arreglos con NumPy', 29),
+    (147, 'Seleccion, edicion de array unidimensionales', 29),
+    (148, 'Uso de rangos', 29),
+    (149, 'Copia de un array', 29),
+    (150, 'Atributo shape', 29),
+    (151, 'Funcion reshape', 29),
+    (152, 'Metodo flatten', 29),
+    (153, 'Funcion sort', 29),
+    (154, 'Arreglos especiales', 29),
+    (155, 'Matplotlib', 29),
+    (156, 'Funcion plot', 29),
+    (157, 'Funcion show', 29),
+    (158, 'Funcion subplot2grid', 29),
+    (159, 'Pandas', 29),
+    (160, 'Dataframes', 29),
+    (161, 'Creaciones de series', 29),
+    (162, 'Creacion de Dataframes', 29),
+    (163, 'Inspeccion de series y dataframes', 29),
+    (164, 'Metodo head, tail, sample, describe', 29),
+    (165, 'Leer archivos CSV', 29),
+    (166, 'Estadistica', 29),
+    (167, 'Conceptos Basicos de estadistica', 29),
+    (168, 'Poblacion', 29),
+    (169, 'Muestra', 29),
+    (170, 'Tablas de distribucion de frecuencias', 29),
+    (171, 'Medidas de tendencia central', 29),
+    (172, 'Medida muestral, ponderada', 29),
+    (173, 'Moda', 29),
+    (174, 'Mediana', 29),
+    (175, 'Medidas de variabilidad o dispersion', 29),
+    (176, 'Rango', 29),
+    (177, 'Desviacion media', 29),
+    (178, 'Varianza y desviacion estandar', 29);
+
+INSERT INTO MPersona values
+    (1, 1,"Andres", "Ramirez", "Perez", 17, 5521249568, 'AndyRam', '15431230', 1, 4, 1, 2),
+    (2, 1,"Citlali", "Soria", "Armello", 16, 5512305947, 'CitlaliArmello', '04051917', 1, 2, 2, 2),
+    (3, 1,"Jorge", "Galicia", "Castro", 18, 5717335153, 'JorchGaliCa', '19052022', 1, 3, 1, 2),
+    (4, 1,"Damian", "Pedroza", "Gordillo", 16, 5429077136, 'DamiPedroza89', '02012004', 1, 1, 1, 2), 
+    (5, 1,"Diana", "Cortes", "Estribada", 17, 4300271549, 'Dianix124', '21122121', 1, 2, 2, 2),
+    (6, 1,"Karla", "Panini", "Rosales", 16, 5628304815, 'KarlitxOwO', '13052015', 1, 4, 2, 2),
+    (7, 1,"Rebeca", "Ortiz", "Alva", 18, 7354419812, 'Rebe1728', '99887766', 1, 3, 2, 2),
+    (8, 1,"Emilio", "Colunga", "Salinas", 16, 9856741203, 'EmilioChief777', '25052022', 1, 1, 1, 2);

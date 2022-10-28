@@ -1,0 +1,1 @@
+export interface a {req: NextApiRequest, res: NextApiResponse <Data>}
